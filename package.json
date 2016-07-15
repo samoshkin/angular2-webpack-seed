@@ -1,0 +1,24 @@
+{
+  "name": "angular2",
+  "version": "1.0.0",
+  "description": "Learn angular2",
+  "main": "index.js",
+  "dependencies": {
+    "domready": "1.0.8"
+  },
+  "devDependencies": {
+    "@types/domready": "0.0.28",
+    "codelyzer": "0.0.25",
+    "tslint": "3.14.0-dev.0",
+    "tslint-eslint-rules": "1.3.0",
+    "tslint-stylish": "2.1.0-beta",
+    "typescript": "^2.0.0-beta",
+    "vrsource-tslint-rules": "0.12.0"
+  },
+  "scripts": {
+    "tslint": "tslint",
+    "lint": "tslint \"src/**/*.ts\" -s node_modules/tslint-stylish -t stylish"
+  },
+  "author": "",
+  "license": "ISC"
+}
