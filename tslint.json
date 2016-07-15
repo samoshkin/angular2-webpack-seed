@@ -10,7 +10,7 @@
   "extends": "tslint:recommended",
   "rules": {
 
-    /* TSLint rules */
+    /* TSLint recommended preset tweaks */
     "member-access": false,
     "no-console": [false],
     "object-literal-sort-keys": false,
@@ -40,6 +40,43 @@
     "pipe-naming": [true, "camelCase", "sg"],
     "component-class-suffix": true,
     "directive-class-suffix": true,
-    "import-destructuring-spacing": true
+    "import-destructuring-spacing": true,
+
+    /* Tslint/Eslint errors */
+    "array-bracket-spacing": [
+      true,
+      "never"
+    ],
+    "block-spacing": [
+      true,
+      "always"
+    ],
+    "brace-style": [
+      true,
+      "1tbs",
+      {
+        "allowSingleLine": true
+      }
+    ],
+    "handle-callback-err": [
+      true,
+      "^(err|error|anySpecificError)$"
+    ],
+    "no-constant-condition": true,
+    "no-control-regex": true,
+    "no-duplicate-case": true,
+    "no-empty-character-class": true,
+    "no-extra-boolean-cast": true,
+    "no-extra-semi": true,
+    "no-inner-declarations": [
+      true,
+      "functions"
+    ],
+    "no-invalid-regexp": true,
+    "no-irregular-whitespace": true,
+    "no-regex-spaces": true,
+    "no-sparse-arrays": true,
+    "no-unexpected-multiline": true,
+    "valid-typeof": true
   }
 }
