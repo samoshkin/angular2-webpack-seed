@@ -1,0 +1,30 @@
+root: true
+extends: airbnb-base
+env:
+  node: true
+  es6: true
+parserOptions:
+  ecmaVersion: 6
+  sourceType: module
+  ecmaFeatures:
+    experimentalObjectRestSpread: true
+rules:
+  comma-dangle:
+    - 2
+    - never
+  no-param-reassign: 0
+  prefer-template: 0
+  func-names: 0
+
+  no-console: 0
+  no-confusing-arrow: 0
+  no-nested-ternary: 0
+  no-else-return: 0
+  no-underscore-dangle: 0
+
+  import/no-extraneous-dependencies:
+  -  2
+  -  devDependencies: true
+     optionalDependencies: false
+
+

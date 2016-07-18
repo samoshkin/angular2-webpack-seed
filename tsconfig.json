@@ -3,21 +3,18 @@
     "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
-    "isolatedModules": false,
-    "jsx": "react",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "declaration": false,
     "noImplicitAny": false,
     "noImplicitReturns": true,
     "noImplicitUseStrict": false,
-    "removeComments": true,
+    "noEmitHelpers": true,
     "noLib": false,
     "lib": ["es6", "dom"],
-    "preserveConstEnums": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "outDir": "dist",
-    "pretty": true
+    "pretty": true,
+    "types": [
+      "node"
+    ]
   },
   "exclude": [
     "node_modules"
@@ -28,8 +25,7 @@
     "rewriteTsconfig": false
   },
   "awesomeTypescriptLoaderOptions": {
-    "forkChecker": true,
-    "useWebpackText": true
+    "forkChecker": true
   },
   "formatCodeOptions": {
     "indentSize": 2,
