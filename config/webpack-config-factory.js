@@ -141,8 +141,7 @@ const getPlugins = function* (options, appConfig) {
   }]);
 
   yield new CommonsChunkPlugin({
-    name: ['vendor'],
-    minChunks: Infinity
+    name: ['vendor', 'polyfills']
   });
 
   yield new DefinePlugin({
