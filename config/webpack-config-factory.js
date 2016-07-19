@@ -3,12 +3,12 @@ const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 const getAppConfig = require('./app.config.js');
 
-const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const WebpackMd5Hash = require('webpack-md5-hash');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ForkCheckerPlugin = require('awesome-typescript-loader').ForkCheckerPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const HotModuleReplacementPlugin = webpack.HotModuleReplacementPlugin;
 const DefinePlugin = webpack.DefinePlugin;
 const NoErrorsPlugin = webpack.NoErrorsPlugin;
 const SourceMapDevToolPlugin = webpack.SourceMapDevToolPlugin;
@@ -45,8 +45,9 @@ const getLoaders = function* (options) {
   // Typescript files + Angular2 tempaltes
   yield {
     test: /\.ts$/,
+    include: [root('src')],
     loaders: [
-      'awesome-typescript?forkChecker',
+      'awesome-typescript',
       'angular2-template'
     ],
     exclude: [/\.(spec|e2e)\.ts$/]
@@ -128,8 +129,8 @@ const getPlugins = function* (options, appConfig) {
     buildTarget,
     devServer,
     sourceMaps,
-    debug,
-    progress,
+    inlineSourceMaps,
+    release,
     optimize
   } = options;
 
@@ -146,9 +147,9 @@ const getPlugins = function* (options, appConfig) {
 
   yield new DefinePlugin({
     'process.env': {
-      NODE_ENV: JSON.stringify(debug ? 'development' : 'production'),
-      ENV: JSON.stringify(env),
-      DEBUG: debug,
+      NODE_ENV: JSON.stringify(release ? 'production' : 'development'),
+      TARGET_ENV: JSON.stringify(env),
+      RELEASE: release,
       BUILD_TARGET: JSON.stringify(buildTarget),
       DEV_SERVER: !!devServer
     },
@@ -156,6 +157,8 @@ const getPlugins = function* (options, appConfig) {
       config: JSON.stringify(appConfig)
     }
   });
+
+  yield new OccurenceOrderPlugin(true);
 
   yield new HtmlWebpackPlugin({
     baseUrl: appConfig.baseUrl,
@@ -165,6 +168,7 @@ const getPlugins = function* (options, appConfig) {
   });
 
   if (devServer) {
+    yield new HotModuleReplacementPlugin();
     yield new NoErrorsPlugin();
   }
 
@@ -174,9 +178,7 @@ const getPlugins = function* (options, appConfig) {
       root('config/angular2-hmr-fake.js'));
   }
 
-  yield new OccurenceOrderPlugin();
-
-  if (!debug) {
+  if (release) {
     yield new DedupePlugin();
 
     // TODO: or include for all builds
@@ -202,19 +204,6 @@ const getPlugins = function* (options, appConfig) {
       },
       comments: false
     });
-  } else {
-    // NOTE: just to remove comments from vendor and polyfills chunks
-    // find alternative solution to remove comments w/o using UglifyJSPlugin
-    yield new UglifyJsPlugin({
-      beautify: true,
-      mangle: false,
-      compress: false,
-      comments: false,
-      output: {
-        comments: false
-      },
-      include: [/vendor/, /polyfills/]
-    });
   }
 
   if (sourceMaps) {
@@ -224,32 +213,28 @@ const getPlugins = function* (options, appConfig) {
     // in debug: 'cheap-module-source-map', but exclude vendor and common chunks
     // in release: 'source-map', so it works in tandem with UglifyJSPlugin
     // see https://github.com/webpack/webpack/blob/c10432384413fbe2bc9a46f1a762d5c73ed5d950/lib/WebpackOptionsApply.js#L170-L199
-
-    // inline maps are required for Cordova environment due to file:// protocol
-    const inline = buildTarget === 'mobile' || debug;
     yield new SourceMapDevToolPlugin({
-      filename: inline ? null : '[file].map',
+      filename: inlineSourceMaps ? null : '[file].map',
       exclude: [/vendor/, /polyfills/],
-      columns: !debug,
+      columns: release,
       module: true
     });
   }
+};
 
-  if (progress) {
-    yield new ProgressBarPlugin({
-      width: 75
-    });
+const getDevMiddlewareClient = function* (options) {
+  if (options.devServer) {
+    yield 'webpack-hot-middleware/client?reload=true&path=/__webpack_hmr';
   }
 };
 
 module.exports = options => {
   const {
-    debug,
+    release,
     buildOutputDir,
     buildTarget,
     longTermCaching,
     failOnLinterError,
-    browsers,
     devServer
   } = options;
 
@@ -257,7 +242,8 @@ module.exports = options => {
   const publicPath = '/';
 
   return {
-    debug,
+    debug: !release,
+    cache: !!devServer,
     target: {
       web: 'web',
       mobile: 'web',
@@ -267,7 +253,10 @@ module.exports = options => {
     entry: {
       polyfills: `./src/polyfills.${options.buildTarget}.ts`,
       vendor: './src/vendor.ts',
-      main: './src/main.ts'
+      main: [
+        ...getDevMiddlewareClient(options),
+        './src/main.ts'
+      ]
     },
 
     output: {
@@ -282,7 +271,7 @@ module.exports = options => {
       sourceMapFilename: longTermCaching
         ? 'js/[name].[chunkhash].map'
         : 'js/[name].map',
-      pathinfo: debug
+      pathinfo: !release
     },
 
     resolve: {
@@ -292,11 +281,8 @@ module.exports = options => {
     },
 
     module: {
-      // TODO: check
       noParse: [
-        /.+zone\.js\/dist\/.+/,
-        /.+angular2\/bundles\/.+/,
-        /angular2-polyfills\.js/,
+        /zone\.js\/dist\//,
         /\.min\.js/
       ],
       loaders: [...getLoaders(options)],
@@ -305,17 +291,18 @@ module.exports = options => {
 
     plugins: [...getPlugins(options, appConfig)],
 
-    devServer: {
-      outputPath: root(buildOutputDir),
+    devServer: devServer && {
       publicPath,
       port: devServer.port,
       host: devServer.host,
       historyApiFallback: true,
+      lazy: false,
+      quiet: false,
+      noInfo: false,
       watchOptions: {
         aggregateTimeout: 300,
         poll: 1000
       },
-      compress: true,
       stats: {
         hash: true,
         version: true,
@@ -345,7 +332,9 @@ module.exports = options => {
     postcss: () => [
       autoprefixer({
         remove: false,
-        browsers
+        browsers: [
+          'last 2 versions'
+        ]
       })
     ]
   };

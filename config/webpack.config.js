@@ -1,28 +1,23 @@
-// TODO: setup eslint for webpack config files
-const argv = require('yargs').argv;
 const createWebpackConfig = require('./webpack-config-factory');
 
-const debug = !!process.env.DEBUG;
+const release = !!process.env.RELEASE;
 const buildTarget = process.env.TARGET.toLowerCase();
-const env = process.env.ENV || 'local';
-const isDevServer = argv.$0 === 'webpack-dev-server';
+
+// NOTE: cannot use just ENV, because angular2-hmr works only when ENV contains 'dev'
+const env = process.env.TARGET_ENV || 'local';
 
 module.exports = createWebpackConfig({
-  debug,
+  release,
   buildTarget,
   env,
+
+  // TODO: calculate correct output dir based on build target
   buildOutputDir: 'dist',
-  longTermCaching: !debug,
-  extractStylesheet: !isDevServer,
+  longTermCaching: release,
+  extractStylesheet: true,
   lint: true,
-  failOnLinterError: !isDevServer,
+  failOnLinterError: true,
   sourceMaps: true,
-  devServer: isDevServer && {
-    port: 3001,
-    host: '0.0.0.0'
-  },
-  browsers: [
-    'last 2 versions'
-  ],
-  progress: true
+  // inline maps are required for Cordova environment due to file:// protocol
+  inlineSourceMaps: buildTarget === 'mobile' || !release
 });

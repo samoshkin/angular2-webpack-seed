@@ -2,20 +2,22 @@ import { enableProdMode } from '@angular/core';
 import { bootstrap } from '@angular/platform-browser-dynamic';
 import { HTTP_PROVIDERS } from '@angular/http';
 import AppComponent from './app.component';
+import { AppState } from './app.service';
 
-if (!process.env.DEBUG) {
+if (process.env.RELEASE) {
   enableProdMode();
 }
 
-// bootstrap application
-// bootstrap application
-// bootstrap application
-// bootstrap application
-// bootstrap application
-// bootstrap application
-// bootstrap application
-// bootstrap application
-bootstrap(AppComponent, [
+function main(initialHMRState?) {
+  return bootstrap(AppComponent, [
     HTTP_PROVIDERS,
-  ])
-  .catch(err => console.error(err));
+    AppState
+  ]).catch(err => console.error(err));
+}
+
+if (process.env.DEV_SERVER) {
+  const hmr = require('angular2-hmr');
+  hmr.hotModuleReplacement(main, module);
+} else {
+  document.addEventListener('DOMContentLoaded', () => main());
+}

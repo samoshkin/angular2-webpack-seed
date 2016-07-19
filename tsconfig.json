@@ -25,7 +25,8 @@
     "rewriteTsconfig": false
   },
   "awesomeTypescriptLoaderOptions": {
-    "forkChecker": true
+    "forkChecker": true,
+    "useWebpackText": true
   },
   "formatCodeOptions": {
     "indentSize": 2,

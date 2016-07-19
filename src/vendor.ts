@@ -8,7 +8,8 @@ import '@angular/http';
 import '@angular/router';
 
 // RxJS
-import 'rxjs';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/mergeMap';
 
 if (process.env.DEV_SERVER) {
   require('angular2-hmr');
