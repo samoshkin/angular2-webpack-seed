@@ -2,13 +2,20 @@ interface ErrorStackTraceLimit {
   stackTraceLimit: number;
 }
 
-interface ErrorConstructor extends ErrorStackTraceLimit { }
-
 interface AppConfig {
   config: any;
 }
 
-declare var app: AppConfig;
+interface WebpackRequire {
+    (id: string): any;
+    (paths: string[], callback: (...modules: any[]) => void): void;
+    ensure(ids: string[], callback: (req: WebpackRequire) => void, chunkName?: string): void;
+    context(directory: string, useSubDirectories?: boolean, regExp?: RegExp): WebpackContext;
+}
+
+interface WebpackContext extends WebpackRequire {
+    keys(): string[];
+}
 
 type Environment = 'local'
   | 'develop'
@@ -17,9 +24,13 @@ type Environment = 'local'
 
 type BuildTarget = 'web' | 'mobile' | 'desktop';
 
-declare namespace NodeJS {
+declare var app: AppConfig;
 
+declare namespace NodeJS {
   interface Global {
     app: AppConfig;
   }
 }
+
+interface NodeRequire extends WebpackRequire { }
+interface ErrorConstructor extends ErrorStackTraceLimit { }

@@ -95,6 +95,7 @@ const getLoaders = function* (options) {
     test: /\.scss$/,
     include: [
       root('src/styles'),
+      root('src/assets'),
       [/node_modules/]
     ],
     loader: extractStylesheet
@@ -117,7 +118,7 @@ const getLoaders = function* (options) {
 
   // fonts
   yield {
-    test: /\.(woff2|woff|otf|ttf|eot|svg)(\?.*)?$/,
+    test: /\.(woff2|woff|otf|ttf|eot)(\?.*)?$/,
     loader: `file?name=fonts/[name]${longTermCaching ? '.[hash]' : ''}.[ext]`
   };
 };
@@ -282,7 +283,7 @@ module.exports = options => {
 
     resolveLoader: {
       alias: {
-        'to-string': root('scripts/to-string-loader')
+        'to-string': root('webpack/to-string-loader')
       }
     },
 

@@ -15,6 +15,7 @@ import { AppState } from './app.service.ts';
         <button md-raised-button>RAISED</button>
         <button md-raised-button color="primary">PRIMARY RAISED</button>
         <button md-raised-button color="accent">ACCENT RAISED</button>
+        <md-icon>home</md-icon>
       </md-card>
     </div>
   `
@@ -24,7 +25,8 @@ export default class AppComponent implements OnInit {
     counter: 1
   };
 
-  constructor(public appState: AppState) {
+  constructor(
+    public appState: AppState) {
   }
 
   onClicked() {
