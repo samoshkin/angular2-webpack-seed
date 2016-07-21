@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
-const getAppConfig = require('./app.config.js');
+const getAppConfig = require('../config/app.config');
 
 const WebpackMd5Hash = require('webpack-md5-hash');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -61,25 +61,25 @@ const getLoaders = function* (options) {
 
   // load application component CSS as text
   // when they are required as styleUrl in Angular component definition
-  yield {
-    test: /\.css$/,
-    include: root('src'),
-    exclude: root('src/styles'),
-    loader: 'raw!postcss'
-  };
+  // yield {
+  //   test: /\.css$/,
+  //   include: root('src'),
+  //   exclude: root('src/styles'),
+  //   loader: 'raw!postcss'
+  // };
 
   // TODO: enable source maps for CSS
   // load application and 3rd party global CSS
-  yield {
-    test: /\.css$/,
-    include: [
-      root('src/styles'),
-      [/node_modules/]
-    ],
-    loader: extractStylesheet
-      ? ExtractTextPlugin.extract('style', 'css!postcss')
-      : 'style!css!postcss'
-  };
+  // yield {
+  //   test: /\.css$/,
+  //   include: [
+  //     root('src/styles'),
+  //     [/node_modules/]
+  //   ],
+  //   loader: extractStylesheet
+  //     ? ExtractTextPlugin.extract('style', 'css!postcss')
+  //     : 'style!css!postcss'
+  // };
 
   // load application SCSS as text
   // when they are required as styleUrl in Angular component definition
@@ -87,7 +87,7 @@ const getLoaders = function* (options) {
     test: /\.scss$/,
     include: root('src'),
     exclude: root('src/styles'),
-    loader: 'raw!postcss!sass'
+    loader: 'to-string!css!postcss!sass!sass-resources'
   };
 
   // load application and 3rd party global SCSS
@@ -117,7 +117,7 @@ const getLoaders = function* (options) {
 
   // fonts
   yield {
-    test: /\.(woff2|woff|otf|ttf)(\?.*)?$/,
+    test: /\.(woff2|woff|otf|ttf|eot|svg)(\?.*)?$/,
     loader: `file?name=fonts/[name]${longTermCaching ? '.[hash]' : ''}.[ext]`
   };
 };
@@ -186,7 +186,7 @@ const getPlugins = function* (options, appConfig) {
   }
 
   if (extractStylesheet) {
-    yield new ExtractTextPlugin(`[name].css${options.longTermCaching ? '?[contenthash]' : ''}`);
+    yield new ExtractTextPlugin(`css/[name].css${options.longTermCaching ? '?[contenthash]' : ''}`);
   }
 
   if (optimize) {
@@ -280,6 +280,12 @@ module.exports = options => {
       moduleDirectories: ['node_modules']
     },
 
+    resolveLoader: {
+      alias: {
+        'to-string': root('scripts/to-string-loader')
+      }
+    },
+
     module: {
       noParse: [
         /zone\.js\/dist\//,
@@ -327,6 +333,17 @@ module.exports = options => {
       formatter: 'stylish',
       formattersDirectory: 'node_modules/tslint-stylish'
     },
+
+    sassLoader: {
+      sourceMap: false,
+      outputStyle: 'expanded',
+      includePaths: [root('src/styles')]
+    },
+
+    sassResources: [
+      './src/styles/variables.scss',
+      './src/styles/mixins.scss'
+    ],
 
     // TODO: clean up and minify CSS for relase builds
     postcss: () => [

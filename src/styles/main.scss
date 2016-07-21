@@ -1,0 +1,11 @@
+@import "variables";
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  -webkit-font-smoothing: antialiased;
+  min-width: $body-min-width;
+  position: relative;
+}

@@ -1,16 +1,21 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HmrState } from 'angular2-hmr';
 import { AppState } from './app.service.ts';
 
 @Component({
   selector: 'app',
-  encapsulation: ViewEncapsulation.None,
-  styleUrls: [
-    './app.style.css'
+  styles: [
+    require('./app.scss')
   ],
   template: `
     <div class="application" (click)="onClicked($event)">
-      Hello, {{ state.counter }}, {{ appState.get('value') }}
+      <i class="icon ion-md-star"></i>
+      <md-card>
+        <button md-button>FLAT</button>
+        <button md-raised-button>RAISED</button>
+        <button md-raised-button color="primary">PRIMARY RAISED</button>
+        <button md-raised-button color="accent">ACCENT RAISED</button>
+      </md-card>
     </div>
   `
 })

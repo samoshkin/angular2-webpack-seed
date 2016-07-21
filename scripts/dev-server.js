@@ -2,7 +2,7 @@ const express = require('express');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const webpack = require('webpack');
-const webpackConfigFactory = require('../config/webpack-config-factory.js');
+const webpackConfigFactory = require('../webpack/webpack-config-factory.js');
 
 const app = express();
 
@@ -19,7 +19,7 @@ const webpackConfig = webpackConfigFactory({
   // TODO: change dir depending on build target
   buildOutputDir: 'dist',
   longTermCaching: false,
-  extractStylesheet: false,
+  extractStylesheet: true,
   lint: true,
   failOnLinterError: false,
   sourceMaps: true,
