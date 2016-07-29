@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { HmrState } from 'angular2-hmr';
-import { AppState } from './app.service.ts';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app',
@@ -8,37 +9,87 @@ import { AppState } from './app.service.ts';
     require('./app.scss')
   ],
   template: `
-    <div class="application" (click)="onClicked($event)">
-      <i class="icon ion-md-star"></i>
-      <md-card>
-        <button md-button>FLAT</button>
-        <button md-raised-button>RAISED</button>
-        <button md-raised-button color="primary">PRIMARY RAISED</button>
-        <button md-raised-button color="accent">ACCENT RAISED</button>
-        <md-icon>home</md-icon>
-      </md-card>
-    </div>
+    <header>
+      This is header, from app.component.ts
+    </header>
+    <nav>
+      <a
+        routerLink="/bag/things"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">Crisis Center</a>
+      <a href="#" (click)="navigateToThing(1, $event);">Go to Thing 1</a>
+      <a href="#" (click)="navigateToThing(2, $event);">Go to Thing 2</a>
+    </nav>
+    <router-outlet></router-outlet>
   `
 })
 export default class AppComponent implements OnInit {
-  @HmrState() state = {
-    counter: 1
-  };
+  constructor(private router: Router) {
 
-  constructor(
-    public appState: AppState) {
-  }
-
-  onClicked() {
-    console.log('onclicked');
-
-    // FIXME: AngularClass/angular2-hmr/blob/111712e98ec4fdcc2c169ba3c9fd6aaceb03ed44/src/hmr-decorator.ts#L43
-    // there is bug in angular2-hmr
-    this.state.counter = this.state.counter + 1;
-    this.appState.set('value', this.state.counter);
   }
 
   ngOnInit() {
     console.log('Application is initialized');
   }
+
+  onClicked() {
+    // console.log('onclicked');
+
+    // FIXME: AngularClass/angular2-hmr/blob/111712e98ec4fdcc2c169ba3c9fd6aaceb03ed44/src/hmr-decorator.ts#L43
+    // there is bug in angular2-hmr
+    // this.state.counter = this.state.counter + 1;
+    // this.appState.set('value', this.state.counter);
+  }
+
+  navigateToThing(id, evt) {
+    evt.preventDefault();
+    this.router.navigate(['/bag/things', id]);
+  }
 }
+
+/*
+ COMPONENTS:
+ App (root) / -> redirect to /bag/:bagId/things/:{firstId} or /new
+ Header
+   StatisticsComponent
+ Menu
+ ThingsListComponent  /bag/:bagId/things
+   ThingComponent
+   ThingsActionBar
+ NewThingForm     /bag/:bagId/things/:thingId
+ EditThingForm    /bag/:bagId/things/new
+*/
+
+/*
+ ROUTES:
+ / -> redirect to bag/things/
+/bag/things -> redirect to /bag/things/:{firstId}
+/bag/things/new
+/bag/things/{:id}
+*/
+
+/*
+Data Model:
+bag: {
+  things: [],
+}
+
+thing: {
+  name,
+  status,
+  category,
+  notes,
+  optional
+  tags: []
+}
+*/
+
+
+/*
+Actions:
+loadThings()
+addThing()
+editThing()
+changeStatus()
+removeThing()
+*/

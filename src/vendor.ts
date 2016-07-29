@@ -11,7 +11,7 @@ import '@angular/router';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 
-import './material2';
+// import './material2';
 
 if (process.env.DEV_SERVER) {
   require('angular2-hmr');

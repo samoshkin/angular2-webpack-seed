@@ -2,6 +2,10 @@ import { enableProdMode } from '@angular/core';
 import { bootstrap } from '@angular/platform-browser-dynamic';
 import { HTTP_PROVIDERS } from '@angular/http';
 import { PLATFORM_DIRECTIVES } from '@angular/core';
+import { ROUTER_DIRECTIVES } from '@angular/router';
+import { disableDeprecatedForms, provideForms } from '@angular/forms';
+import { provideRouter } from '@angular/router';
+import { routes } from './app';
 
 import AppComponent from './app/app.component';
 import { AppState } from './app/app.service';
@@ -19,7 +23,12 @@ function main(initialHMRState?) {
     HTTP_PROVIDERS,
     AppState,
     ...MATERIAL_PROVIDERS,
-    { provide: PLATFORM_DIRECTIVES, multi: true, useValue: MATERIAL_DIRECTIVES }
+    { provide: PLATFORM_DIRECTIVES, multi: true, useValue: MATERIAL_DIRECTIVES },
+    { provide: PLATFORM_DIRECTIVES, multi: true, useValue: [ROUTER_DIRECTIVES] },
+    provideRouter(routes),
+    ROUTER_DIRECTIVES,
+    disableDeprecatedForms(),
+    provideForms()
   ]).catch(err => console.error(err));
 }
 
