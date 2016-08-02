@@ -46,7 +46,6 @@ export default class AppComponent implements OnInit {
   navigateToThing(id, evt) {
     evt.preventDefault();
 
-    this.store.dispatch(changeTaskStatus({ id, status: TaskStatus.Done }));
     this.router.navigate(['/tasks', id]);
   }
 }

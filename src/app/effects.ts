@@ -2,12 +2,20 @@ import { Injectable } from '@angular/core';
 import { StateUpdates, Effect, toPayload } from '@ngrx/effects';
 import { AppState } from './reducers';
 
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/ignoreElements';
+import 'rxjs/add/operator/take';
+import 'rxjs/add/operator/withLatestFrom';
+import 'rxjs/add/operator/let';
+import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/observable/fromPromise';
-import { loadAllTasks } from './actions';
+import 'rxjs/add/observable/interval';
+import { loadAllTasks, loadTaskById } from './actions';
 import { success, error } from './action-helpers';
+import { TaskStatus } from './reducers';
 
 const tasksData = [
   {
@@ -20,6 +28,12 @@ const tasksData = [
   }
 ];
 
+const handleAction = (action, handler) => stateUpdates$ =>
+  stateUpdates$
+    .whenAction(action.type)
+    .mergeMap(updates => Observable.fromPromise(handler(updates.action, updates.state))
+      .map(res => success(action)(res, updates.action))
+      .catch(err => Observable.of(error(action)(err, updates.action))));
 
 @Injectable()
 export class TaskEffects {
@@ -28,20 +42,31 @@ export class TaskEffects {
   loadTasksOnInit$ = Observable.of(loadAllTasks());
 
   @Effect()
-  loadTasks$ = this.updates$
-    .whenAction(loadAllTasks.type)
-    .map(toPayload)
-    .switchMap(query => Observable.fromPromise(this.loadAllTasks(query))
-        .map(success(loadAllTasks))
-        .catch(err => Observable.of(error(loadAllTasks)(err))));
+  loadTasks$ = this.updates$.let(handleAction(
+    loadAllTasks,
+    async action => {
+      // async task
+      await new Promise(res => setTimeout(res, 1000));
 
-  constructor(private updates$: StateUpdates<AppState>) { }
+      return tasksData;
+    }));
 
-  async loadAllTasks(query) {
-    // async task
-    await new Promise(res => setTimeout(res, 1000));
+  @Effect()
+  loadTaskById$ = this.updates$.let(handleAction(
+    loadTaskById,
+    async (action, state) => {
+      const { id } = action.payload;
+      await Observable.interval(2000).take(1).toPromise();
+      return {
+        id,
+        name: 'Debug it',
+        status: TaskStatus.Progress
+      };
+    }));
 
-    return tasksData;
-  }
+  constructor(
+    private updates$: StateUpdates<AppState>,
+    private store: Store<AppState>) { }
+
 }
 
