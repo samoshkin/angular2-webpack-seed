@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'new-thing',
   template: `
-    <div>New thing component</div>
+    <div>New task component</div>
   `
 })
-export default class NewThingComponent implements OnInit {
+export default class NewTaskComponent implements OnInit {
   constructor() { }
 
   ngOnInit() { }

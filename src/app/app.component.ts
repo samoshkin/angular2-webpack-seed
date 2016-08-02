@@ -2,6 +2,8 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
+import { AppState, TaskStatus } from './reducers';
+import { loadAllTasks, changeTaskStatus } from './actions';
 
 @Component({
   selector: 'app',
@@ -14,7 +16,7 @@ import { Router } from '@angular/router';
     </header>
     <nav>
       <a
-        routerLink="/bag/things"
+        routerLink="/tasks"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }">Crisis Center</a>
       <a href="#" (click)="navigateToThing(1, $event);">Go to Thing 1</a>
@@ -24,12 +26,12 @@ import { Router } from '@angular/router';
   `
 })
 export default class AppComponent implements OnInit {
-  constructor(private router: Router) {
-
+  constructor(private router: Router, private store: Store<AppState>) {
   }
 
   ngOnInit() {
     console.log('Application is initialized');
+
   }
 
   onClicked() {
@@ -43,7 +45,9 @@ export default class AppComponent implements OnInit {
 
   navigateToThing(id, evt) {
     evt.preventDefault();
-    this.router.navigate(['/bag/things', id]);
+
+    this.store.dispatch(changeTaskStatus({ id, status: TaskStatus.Done }));
+    this.router.navigate(['/tasks', id]);
   }
 }
 
@@ -93,3 +97,4 @@ editThing()
 changeStatus()
 removeThing()
 */
+

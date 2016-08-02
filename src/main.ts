@@ -4,11 +4,9 @@ import { HTTP_PROVIDERS } from '@angular/http';
 import { PLATFORM_DIRECTIVES } from '@angular/core';
 import { ROUTER_DIRECTIVES } from '@angular/router';
 import { disableDeprecatedForms, provideForms } from '@angular/forms';
-import { provideRouter } from '@angular/router';
-import { routes } from './app';
 
 import AppComponent from './app/app.component';
-import { AppState } from './app/app.service';
+import { provider as appProvider } from './app';
 
 import './styles/main.scss';
 
@@ -21,14 +19,12 @@ if (process.env.RELEASE) {
 function main(initialHMRState?) {
   return bootstrap(AppComponent, [
     HTTP_PROVIDERS,
-    AppState,
     ...MATERIAL_PROVIDERS,
     { provide: PLATFORM_DIRECTIVES, multi: true, useValue: MATERIAL_DIRECTIVES },
     { provide: PLATFORM_DIRECTIVES, multi: true, useValue: [ROUTER_DIRECTIVES] },
-    provideRouter(routes),
-    ROUTER_DIRECTIVES,
     disableDeprecatedForms(),
-    provideForms()
+    provideForms(),
+    appProvider()
   ]).catch(err => console.error(err));
 }
 

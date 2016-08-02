@@ -15,7 +15,7 @@ module.exports = createWebpackConfig({
   buildOutputDir: 'dist',
   longTermCaching: release,
   extractStylesheet: true,
-  lint: true,
+  lint: false,
   failOnLinterError: true,
   sourceMaps: true,
   // inline maps are required for Cordova environment due to file:// protocol
