@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { AppState, getTaskByIdProgress, getTaskById, Task } from './reducers';
+import { AppState, Task } from './reducers';
 import { loadTaskById } from './actions';
 import { ISubscription } from 'rxjs/subscription';
 import { Observable } from 'rxjs/Observable';
@@ -32,11 +32,11 @@ export default class EditTaskComponent implements OnInit, OnDestroy {
       .map(params => loadTaskById({ id: Number(params['id']) }))
       .subscribe(this.store);
 
-    this.isInProgress = this.route.params
-      .switchMap(params => this.store.let(getTaskByIdProgress(Number(params['id']))));
+    // this.isInProgress = this.route.params
+    //   .switchMap(params => this.store.let(getTaskByIdProgress(Number(params['id']))));
 
-    this.task = this.route.params
-      .switchMap(params => this.store.let(getTaskById(Number(params['id']))));
+    // this.task = this.route.params
+    //   .switchMap(params => this.store.let(getTaskById(Number(params['id']))));
   }
 
   ngOnDestroy() {

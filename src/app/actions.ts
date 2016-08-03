@@ -1,4 +1,4 @@
-import { createAction } from './action-helpers';
+import { createAction } from '../framework/ngrx-actions';
 
 export const loadAllTasks = createAction('task/loadAll');
 export const loadTaskById = createAction('task/loadTaskById');
