@@ -1,6 +1,6 @@
 import { Transaction } from './transaction';
 
-function createActionFilter(...whitelist) {
+function createActionFilter(whitelist) {
   return action => whitelist.some(x => {
     if (typeof x === 'string') {
       return action.type === x;

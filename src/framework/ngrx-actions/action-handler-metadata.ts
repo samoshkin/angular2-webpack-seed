@@ -6,7 +6,7 @@ export function ActionHandler(actionOrType) {
     ? actionOrType
     : actionOrType.type;
   return (target: any, key: string) => {
-    const handlers = Reflect.getOwnMetadata(HANDLERS_KEY, target);
+    const handlers = Reflect.getOwnMetadata(HANDLERS_KEY, target) || [];
     Reflect.defineMetadata(HANDLERS_KEY, [...handlers, key], target);
     Reflect.defineMetadata(HANDLER_KEY, { actionType, handlerKey: key }, target, key);
   };

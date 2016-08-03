@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
 import { AppState, TaskStatus } from './reducers';
 import { loadAllTasks, changeTaskStatus } from './actions';
+import 'rxjs/add/operator/delay';
 
 @Component({
   selector: 'app',

@@ -29,13 +29,20 @@ export function connectActionsToHandlers(store: Store<any>, stateUpdates$: State
 
         return Observable.fromPromise(handler(handlerArgs))
           .do(undefined, undefined, () => dispatcher.complete())
-          .map(res => transaction.success(res))
-          .catch(err => Observable.of(transaction.error(err)))
+          .map(res => {
+            console.log('map to success');
+            return transaction.success(res);
+          })
+          .catch(err => {
+            console.log('map to error');
+            return Observable.of(transaction.error(err));
+          })
           .merge(dispatcher);
       });
   }
 
   return function () {
+    console.log('connect actions to handlers');
     handlerObjects
       .map(handlerObject => getHandlersMetadata(handlerObject)
         .map(handlerMetadata => ({
@@ -44,7 +51,11 @@ export function connectActionsToHandlers(store: Store<any>, stateUpdates$: State
         })))
       .reduce((curr, next) => curr.concat(next))
       .map(toEffect)
-      .reduce((curr, next) => curr.merge(next))
+      .reduce((curr, next) => {
+        return curr.merge(next);
+      })
       .subscribe(store);
+
+    return Promise.resolve(true);
   };
 }

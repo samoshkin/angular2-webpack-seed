@@ -55,8 +55,8 @@ const loadTaskByIdState = createReducer(
   {},
   compose(
     actionFilterReducer(childrenAndSelf(loadTaskById)),
-    indexedByReducer(action => (action.transaction || action).payload.id),
-    transactionStateReducer(loadTaskById)),
+    indexedByReducer(action => (action.transaction || action).payload.id))(
+      transactionStateReducer(loadTaskById)),
 );
 
 export default compose(

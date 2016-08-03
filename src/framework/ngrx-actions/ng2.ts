@@ -20,7 +20,7 @@ export function provideActionHandlers(...actionHandlers: any[]) {
 
   return [
     ...allHandlers,
-    allHandlers.map(handlerClass => ({
+    ...allHandlers.map(handlerClass => ({
       provide: ACTION_HANDLERS,
       multi: true,
       useExisting: handlerClass
